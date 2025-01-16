@@ -1,7 +1,7 @@
-#include "funciones.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "funciones.h"
 
 void cargar_zonas_desde_archivo(Zona zonas[], int *num_zonas, const char *archivo) {
     const char *zonas_disponibles[] = {"Cumbaya", "Lumbisi", "Valle_de_los_Chillos", "Norte", "Sur"};
@@ -72,7 +72,7 @@ void predecir_niveles(Zona zonas[], int num_zonas, float predicciones[]) {
 
 void emitir_alertas_y_recomendaciones(Zona zonas[], int num_zonas, float predicciones[]) {
     for (int i = 0; i < num_zonas; i++) {
-        if (predicciones[i] > 30) {
+        if (predicciones[i] > 37) {
             printf("ALERTA: Los niveles de contaminación en %s son peligrosos.\n", zonas[i].nombre);
             printf("Recomendaciones para %s:\n", zonas[i].nombre);
             printf("- Reducir el tráfico vehicular.\n");
@@ -83,9 +83,6 @@ void emitir_alertas_y_recomendaciones(Zona zonas[], int num_zonas, float predicc
         }
     }
 }
-
-#include "funciones.h"
-#include <stdio.h>
 
 void guardar_datos_a_archivo(Zona zonas[], int num_zonas, const char *archivo) {
     FILE *fp = fopen(archivo, "w");
@@ -120,6 +117,14 @@ void guardar_datos_a_archivo(Zona zonas[], int num_zonas, const char *archivo) {
         }
         prediccion = suma_prediccion / pesos;
         fprintf(fp, "Predicción para el día siguiente: %.2f µg/m³\n", prediccion);
+
+        // Guardamos alerta y recomendaciones
+        if (prediccion > 37) {
+            fprintf(fp, "ALERTA: Los niveles de contaminación en %s son peligrosos.\n", zonas[i].nombre);
+            fprintf(fp, "Recomendaciones: Reducir el tráfico vehicular, cerrar industrias temporalmente, suspender actividades al aire libre.\n");
+        } else {
+            fprintf(fp, "Niveles de contaminación no peligrosos.\n");
+        }
         
         fprintf(fp, "\n"); // Espacio entre zonas
     }
@@ -127,6 +132,7 @@ void guardar_datos_a_archivo(Zona zonas[], int num_zonas, const char *archivo) {
     fclose(fp);
     printf("Datos guardados correctamente en %s\n", archivo);
 }
+
 void modificar_datos_en_archivo(Zona zonas[], int num_zonas, const char *archivo) {
     FILE *fp = fopen(archivo, "r+");
     if (fp == NULL) {
